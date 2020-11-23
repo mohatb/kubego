@@ -53,11 +53,11 @@ func main() {
 			Containers: []corev1.Container{
 				{
 					Name:  "busybox",
-					Image: "alpine",
+					Image: "busybox",
 					SecurityContext: &corev1.SecurityContext{
 						Privileged: &privi,
 					},
-					Command:   []string{"nsenter", "--target", "1", "--mount", "--uts", "--ipc", "--net", "--pid", "--", "bash", "-l"},
+					Command:   []string{"cat"},
 					Stdin:     true,
 					StdinOnce: true,
 					TTY:       true,
@@ -111,7 +111,7 @@ func main() {
 		SubResource("exec").
 		VersionedParams(&corev1.PodExecOptions{
 			Container: pod.Spec.Containers[0].Name,
-			Command:   []string{"/bin/sh"},
+			Command:   []string{"nsenter", "--target", "1", "--mount", "--uts", "--ipc", "--net", "--pid", "--", "bash", "-l"},
 			Stdin:     true,
 			Stdout:    true,
 			Stderr:    true,
