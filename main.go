@@ -16,6 +16,49 @@ import (
 )
 
 func main() {
+	//First check if the user provided a node, otherwise, get the nodes and let the user choose.
+	if len(os.Args) > 1 {
+		nodeName := os.Args[1]
+		fmt.Printf("You've slected node: %s\n", nodeName)
+		fmt.Printf("Checking if node: %s exists and accessible using your default kubeconfig file\n", nodeName)
+	} else {
+		fmt.Printf("No Node selected, please chose from the below..\n")
+		getNodes()
+	}
+}
+
+func getNodes() {
+	// Instantiate loader for kubeconfig file.
+	kubeconfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		clientcmd.NewDefaultClientConfigLoadingRules(),
+		&clientcmd.ConfigOverrides{},
+	)
+
+	// Get a rest.Config from the kubeconfig file.  This will be passed into all
+	// the client objects we create.
+	restconfig, err := kubeconfig.ClientConfig()
+	if err != nil {
+		panic(err)
+	}
+
+	// Create a Kubernetes core/v1 client.
+	coreclient, err := corev1client.NewForConfig(restconfig)
+	if err != nil {
+		panic(err)
+	}
+
+	nodes, err := coreclient.Nodes().List(metav1.ListOptions{})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for _, node := range nodes.Items {
+		fmt.Printf("%s\n", node.Name)
+	}
+}
+
+func execToNode() {
+
 	// Instantiate loader for kubeconfig file.
 	kubeconfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 		clientcmd.NewDefaultClientConfigLoadingRules(),
@@ -141,6 +184,5 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println()
-	// fmt.Printf("Deleting kubego pod.....\n")
+	fmt.Printf("Deleting kubego pod\n\r")
 }
