@@ -17,15 +17,30 @@ import (
 
 func main() {
 	//First check if the user provided a node, otherwise, get the nodes and let the user choose.
-	if len(os.Args) > 1 {
+	if len(os.Args) == 2 {
 		nodeName := os.Args[1]
 		fmt.Printf("You've slected node: %s\n", nodeName)
 		fmt.Printf("Checking if node: %s exists and accessible using your default kubeconfig file\n", nodeName)
-	} else {
+	} else if len(os.Args) == 1 {
 		fmt.Printf("No Node selected, please chose from the below..\n")
 		getNodes()
+	} else {
+		fmt.Println(usage)
 	}
 }
+
+const usage = `
+Usage
+--------------
+For this tool to work, you should have a valid kubeconfig file.
+
+Interactive:
+./kubego [nodeName]
+
+Non-Interactive:
+./kubego
+
+Note: Kubego does not require kubectl to be installed.`
 
 func getNodes() {
 	// Instantiate loader for kubeconfig file.
