@@ -20,6 +20,20 @@ var userSelectedIndex int
 var userSelectedNode string
 var nodeName []string
 
+//Display usage message if user had syntax error.
+const usage = `
+Usage
+--------------
+For this tool to work, you should have a valid kubeconfig file located on /home/<user>/.kube/config.
+
+Interactive:
+./kubego [nodeName]
+
+Non-Interactive:
+./kubego
+
+Note: Kubego does not require kubectl to be installed.`
+
 func main() {
 	//First check if the user provided a nodename. if yes, send the node to exec funcation.
 	if len(os.Args) == 2 {
@@ -39,20 +53,6 @@ func main() {
 		fmt.Println(usage)
 	}
 }
-
-//Display usage message if user had syntax error.
-const usage = `
-Usage
---------------
-For this tool to work, you should have a valid kubeconfig file.
-
-Interactive:
-./kubego [nodeName]
-
-Non-Interactive:
-./kubego
-
-Note: Kubego does not require kubectl to be installed.`
 
 func getNodes() string {
 	// Instantiate loader for kubeconfig file.
