@@ -15,15 +15,25 @@ import (
 	"k8s.io/client-go/tools/remotecommand"
 )
 
+//define global variables to be sent to the functions getnodes and exec to nodes.
+var userSelectedIndex int
+var userSelectedNode string
+var nodeName []string
+
 func main() {
 	//First check if the user provided a node, otherwise, get the nodes and let the user choose.
 	if len(os.Args) == 2 {
 		nodeName := os.Args[1]
+		userSelectedNode = nodeName
 		fmt.Printf("You've slected node: %s\n", nodeName)
-		fmt.Printf("Checking if node: %s exists and accessible using your default kubeconfig file\n", nodeName)
+		execToNode(userSelectedNode)
+
 	} else if len(os.Args) == 1 {
 		fmt.Printf("No Node selected, please select the node number..\n")
 		getNodes()
+		fmt.Println()
+		fmt.Printf("You have selected node: %s\n", userSelectedNode)
+		execToNode(userSelectedNode)
 	} else {
 		fmt.Println(usage)
 	}
@@ -43,7 +53,7 @@ Non-Interactive:
 
 Note: Kubego does not require kubectl to be installed.`
 
-func getNodes() {
+func getNodes() string {
 	// Instantiate loader for kubeconfig file.
 	kubeconfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 		clientcmd.NewDefaultClientConfigLoadingRules(),
@@ -71,10 +81,15 @@ func getNodes() {
 	//use range function to find the nodes, countNode has the node index and node has string of node name.
 	for countNode, node := range nodes.Items {
 		fmt.Printf("%d %s\n", countNode, node.Name)
+		nodeName = append(nodeName, node.Name)
 	}
+
+	fmt.Scanln(&userSelectedIndex)
+	userSelectedNode = nodeName[userSelectedIndex]
+	return userSelectedNode
 }
 
-func execToNode() {
+func execToNode(n string) {
 
 	// Instantiate loader for kubeconfig file.
 	kubeconfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
@@ -124,6 +139,7 @@ func execToNode() {
 				},
 			},
 			TerminationGracePeriodSeconds: &zero,
+			NodeName:                      userSelectedNode,
 			HostPID:                       true,
 		},
 	})
