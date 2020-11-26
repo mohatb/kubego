@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"os"
+	"time"
 
 	"golang.org/x/crypto/ssh/terminal"
 
@@ -123,7 +124,7 @@ func execToNode(n string) {
 	var zero int64
 	pod, err := coreclient.Pods(namespace).Create(&corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "busybox",
+			Name: "kubego-" + userSelectedNode + "-" + time.Now().Format("2006-01-02"),
 		},
 		Spec: corev1.PodSpec{
 			Containers: []corev1.Container{
