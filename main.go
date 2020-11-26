@@ -28,10 +28,10 @@ Usage
 For this tool to work, you should have a valid kubeconfig file located on /home/<user>/.kube/config.
 
 Interactive:
-./kubego [nodeName]
+./kubego
 
 Non-Interactive:
-./kubego
+./kubego [nodeName]
 
 Note: Kubego does not require kubectl to be installed.`
 
