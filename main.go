@@ -22,13 +22,14 @@ func main() {
 		fmt.Printf("You've slected node: %s\n", nodeName)
 		fmt.Printf("Checking if node: %s exists and accessible using your default kubeconfig file\n", nodeName)
 	} else if len(os.Args) == 1 {
-		fmt.Printf("No Node selected, please chose from the below..\n")
+		fmt.Printf("No Node selected, please select the node number..\n")
 		getNodes()
 	} else {
 		fmt.Println(usage)
 	}
 }
 
+//Display usage message if user had syntax error.
 const usage = `
 Usage
 --------------
@@ -67,8 +68,9 @@ func getNodes() {
 		panic(err.Error())
 	}
 
-	for _, node := range nodes.Items {
-		fmt.Printf("%s\n", node.Name)
+	//use range function to find the nodes, countNode has the node index and node has string of node name.
+	for countNode, node := range nodes.Items {
+		fmt.Printf("%d %s\n", countNode, node.Name)
 	}
 }
 
