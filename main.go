@@ -21,19 +21,20 @@ var userSelectedNode string
 var nodeName []string
 
 func main() {
-	//First check if the user provided a node, otherwise, get the nodes and let the user choose.
+	//First check if the user provided a nodename. if yes, send the node to exec funcation.
 	if len(os.Args) == 2 {
 		nodeName := os.Args[1]
 		userSelectedNode = nodeName
 		fmt.Printf("You've slected node: %s\n", nodeName)
 		execToNode(userSelectedNode)
-
+		//if the user did not provide arguments to the command. use client-go to get the nodes and prompt the user to select.
+		//then return the node to exec function.
 	} else if len(os.Args) == 1 {
 		fmt.Printf("No Node selected, please select the node number..\n")
-		getNodes()
+		getNodes() //here we are calling exec get node and storing the value returned by the function to variable userSelectedNode
 		fmt.Println()
 		fmt.Printf("You have selected node: %s\n", userSelectedNode)
-		execToNode(userSelectedNode)
+		execToNode(userSelectedNode) //here we are calling exec function and passing the value coming from getnodes function.
 	} else {
 		fmt.Println(usage)
 	}
