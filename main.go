@@ -122,9 +122,10 @@ func execToNode(n string) {
 	// Create a alpine Pod.  By running `cat`, the Pod will sit and do nothing.
 	var privi bool = true
 	var zero int64
+	podName := "kubego-" + userSelectedNode + "-" + time.Now().Format("2006-01-02")
 	pod, err := coreclient.Pods(namespace).Create(&corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
-			Name: "kubego-" + userSelectedNode + "-" + time.Now().Format("2006-01-02"),
+			Name: podName,
 		},
 		Spec: corev1.PodSpec{
 			Containers: []corev1.Container{
@@ -219,5 +220,5 @@ func execToNode(n string) {
 		panic(err)
 	}
 
-	fmt.Printf("Deleting kubego pod\n\r")
+	fmt.Printf("Deleting %q pod\n\r", podName)
 }
