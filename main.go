@@ -80,12 +80,13 @@ func getNodes() string {
 		panic(err.Error())
 	}
 
-	//use range function to find the nodes, countNode has the node index and node has string of node name.
+	//use range function to find the nodes, var countNode has the node index and var node has string of node name.
 	for countNode, node := range nodes.Items {
 		fmt.Printf("%d %s\n", countNode, node.Name)
 		nodeName = append(nodeName, node.Name)
 	}
 
+	//use scanln to get the user input and return the node name for that index in the slice.
 	fmt.Scanln(&userSelectedIndex)
 	userSelectedNode = nodeName[userSelectedIndex]
 	return userSelectedNode
