@@ -58,7 +58,7 @@ func main() {
 	}
 }
 
-func verifyNode(n string) string {
+func verifyNode(n string) {
 	// Instantiate loader for kubeconfig file.
 	kubeconfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
 		clientcmd.NewDefaultClientConfigLoadingRules(),
@@ -98,7 +98,6 @@ func verifyNode(n string) string {
 			os.Exit(1)
 		}
 	}
-	return userSelectedNode
 }
 
 func getNodes() string {
