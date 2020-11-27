@@ -37,10 +37,11 @@ Note: Kubego does not require kubectl to be installed.`
 
 func main() {
 	//First check if the user provided a nodename. if yes, send the node to exec funcation.
-	if len(os.Args) == 2 {
+	if len(os.Args) == 2 && os.Args[1] != "-h" {
 		nodeName := os.Args[1]
 		userSelectedNode = nodeName
 		fmt.Printf("You've slected node: %s\n", nodeName)
+		verifyNode(userSelectedNode)
 		execToNode(userSelectedNode)
 		//if the user did not provide arguments to the command. use client-go to get the nodes and prompt the user to select.
 		//then return the node to exec function.
@@ -50,9 +51,54 @@ func main() {
 		fmt.Println()
 		fmt.Printf("You have selected node: %s\n", userSelectedNode)
 		execToNode(userSelectedNode) //here we are calling exec function and passing the value coming from getnodes function.
+	} else if os.Args[1] == "-h" {
+		fmt.Println(usage)
 	} else {
 		fmt.Println(usage)
 	}
+}
+
+func verifyNode(n string) string {
+	// Instantiate loader for kubeconfig file.
+	kubeconfig := clientcmd.NewNonInteractiveDeferredLoadingClientConfig(
+		clientcmd.NewDefaultClientConfigLoadingRules(),
+		&clientcmd.ConfigOverrides{},
+	)
+
+	// Get a rest.Config from the kubeconfig file.  This will be passed into all
+	// the client objects we create.
+	restconfig, err := kubeconfig.ClientConfig()
+	if err != nil {
+		panic(err)
+	}
+
+	// Create a Kubernetes core/v1 client.
+	coreclient, err := corev1client.NewForConfig(restconfig)
+	if err != nil {
+		panic(err)
+	}
+
+	nodes, err := coreclient.Nodes().List(metav1.ListOptions{})
+	if err != nil {
+		panic(err.Error())
+	}
+
+	//use range function to find the nodes, var countNode has the node index and var node has string of node name.
+	for _, node := range nodes.Items {
+		nodeName = append(nodeName, node.Name)
+	}
+
+	//compare if the node exist in the slice, if not, exit the script. if yes, return the value and go to exec function.
+	for _, a := range nodeName {
+		if a == userSelectedNode {
+			fmt.Printf("Node %s found in your cluster. running exec to the node\n", userSelectedNode)
+			break
+		} else {
+			fmt.Printf("Node %s not found. exiting..\n", userSelectedNode)
+			os.Exit(1)
+		}
+	}
+	return userSelectedNode
 }
 
 func getNodes() string {
