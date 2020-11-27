@@ -41,6 +41,7 @@ func main() {
 		nodeName := os.Args[1]
 		userSelectedNode = nodeName
 		fmt.Printf("You've slected node: %s\n", nodeName)
+		fmt.Printf("Verifying if node %s exist in your cluster\n", nodeName)
 		verifyNode(userSelectedNode)
 		execToNode(userSelectedNode)
 		//if the user did not provide arguments to the command. use client-go to get the nodes and prompt the user to select.
@@ -89,15 +90,23 @@ func verifyNode(n string) {
 	}
 
 	//compare if the node exist in the slice, if not, exit the script. if yes, return the value and go to exec function.
-	for _, a := range nodeName {
-		if a == userSelectedNode {
-			fmt.Printf("Node %s found in your cluster. running exec to the node\n", userSelectedNode)
-			break
-		} else {
-			fmt.Printf("Node %s not found. exiting..\n", userSelectedNode)
-			os.Exit(1)
-		}
+	// for _, a := range nodeName {
+	// 	if a == userSelectedNode {
+	// 		fmt.Printf("Node %s found. running exec to node %s\n", userSelectedNode)
+	// 		break
+	// 	} else if a != userSelectedNode {
+	// 		continue
+	// 	} else {
+	// 		fmt.Printf("Node %s not found. exiting.. \n", userSelectedNode)
+	// 		os.Exit(1)
+	// 	}
+	// }
+	if !nodeExist(nodeName, userSelectedNode) {
+		fmt.Printf("Node %s not Found in your cluster\n", userSelectedNode)
+		os.Exit(1)
 	}
+	fmt.Printf("Node %s Found running exec now \n", userSelectedNode)
+
 }
 
 func getNodes() string {
@@ -267,4 +276,13 @@ func execToNode(n string) {
 	}
 
 	fmt.Printf("Deleting %q pod\n\r", podName)
+}
+
+func nodeExist(slice []string, find string) bool {
+	for _, s := range slice {
+		if s == find {
+			return true
+		}
+	}
+	return false
 }
