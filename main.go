@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 	"time"
@@ -80,7 +81,7 @@ func verifyNode(n string) {
 		panic(err)
 	}
 
-	nodes, err := coreclient.Nodes().List(metav1.ListOptions{})
+	nodes, err := coreclient.Nodes().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
@@ -119,7 +120,7 @@ func getNodes() string {
 		panic(err)
 	}
 
-	nodes, err := coreclient.Nodes().List(metav1.ListOptions{})
+	nodes, err := coreclient.Nodes().List(context.TODO(), metav1.ListOptions{})
 	if err != nil {
 		panic(err.Error())
 	}
@@ -168,7 +169,7 @@ func execToNode(n string) {
 	var privi bool = true
 	var zero int64
 	podName := "kubego-" + userSelectedNode + "-" + time.Now().Format("20060102150405")
-	pod, err := coreclient.Pods(namespace).Create(&corev1.Pod{
+	pod, err := coreclient.Pods(namespace).Create(context.TODO(), &corev1.Pod{
 		ObjectMeta: metav1.ObjectMeta{
 			Name: podName,
 		},
@@ -190,16 +191,16 @@ func execToNode(n string) {
 			NodeName:                      userSelectedNode,
 			HostPID:                       true,
 		},
-	})
+	}, metav1.CreateOptions{})
 	if err != nil {
 		panic(err)
 	}
 
 	// Delete the Pod before we exit.
-	defer coreclient.Pods(namespace).Delete(pod.Name, &metav1.DeleteOptions{})
+	defer coreclient.Pods(namespace).Delete(context.TODO(), pod.Name, metav1.DeleteOptions{})
 
 	// Wait for the Pod to indicate Ready == True.
-	watcher, err := coreclient.Pods(namespace).Watch(
+	watcher, err := coreclient.Pods(namespace).Watch(context.TODO(),
 		metav1.SingleObject(pod.ObjectMeta),
 	)
 	if err != nil {
