@@ -7,7 +7,7 @@ import (
 
 	"golang.org/x/crypto/ssh/terminal"
 
-	. "github.com/logrusorgru/aurora"
+	cc "github.com/logrusorgru/aurora"
 	corev1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/watch"
@@ -41,8 +41,8 @@ func main() {
 	if len(os.Args) == 2 && os.Args[1] != "-h" {
 		nodeName := os.Args[1]
 		userSelectedNode = nodeName
-		fmt.Printf("You've slected node: %s\n", Yellow(nodeName))
-		fmt.Printf("Verifying if node %s exist in your cluster\n", Yellow(nodeName))
+		fmt.Printf("You've slected node: %s\n", cc.Yellow(nodeName))
+		fmt.Printf("Verifying if node %s exist in your cluster\n", cc.Yellow(nodeName))
 		verifyNode(userSelectedNode)
 		execToNode(userSelectedNode)
 		//if the user did not provide arguments to the command. use client-go to get the nodes and prompt the user to select.
@@ -51,7 +51,7 @@ func main() {
 		fmt.Printf("No Node selected, please select the node number..\n")
 		getNodes() //here we are calling exec get node and storing the value returned by the function to variable userSelectedNode
 		fmt.Println()
-		fmt.Printf("You have selected node: %s\n", Yellow(userSelectedNode))
+		fmt.Printf("You've selected node: %s\n", cc.Yellow(userSelectedNode))
 		execToNode(userSelectedNode) //here we are calling exec function and passing the value coming from getnodes function.
 	} else if os.Args[1] == "-h" {
 		fmt.Println(usage)
@@ -92,10 +92,10 @@ func verifyNode(n string) {
 
 	//compare if the node exist in the slice, if not, exit the script. if yes, return the value and go to exec function.
 	if !nodeExist(nodeName, userSelectedNode) {
-		fmt.Printf("Node %s was not found in your cluster\n", Red(userSelectedNode))
+		fmt.Printf("Node %s was not found in your cluster\n", cc.Red(userSelectedNode))
 		os.Exit(1)
 	}
-	fmt.Printf("Node %s found, starting a shell.. \n", Blue(userSelectedNode))
+	fmt.Printf("Node %s found, starting a shell.. \n", cc.Blue(userSelectedNode))
 
 }
 
@@ -126,7 +126,7 @@ func getNodes() string {
 
 	//use range function to find the nodes, var countNode has the node index and var node has string of node name.
 	for countNode, node := range nodes.Items {
-		fmt.Printf("%d %s\n", countNode, node.Name)
+		fmt.Printf("%d %s\n", cc.BgBlue(countNode), cc.Blue(node.Name))
 		nodeName = append(nodeName, node.Name)
 	}
 
@@ -265,7 +265,7 @@ func execToNode(n string) {
 		panic(err)
 	}
 
-	fmt.Printf("Deleting %q pod\n\r", Red(podName))
+	fmt.Printf("Deleting %q pod\n\r", cc.Red(podName))
 }
 
 func nodeExist(slice []string, find string) bool {
