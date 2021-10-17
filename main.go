@@ -6,7 +6,7 @@ import (
 	"os"
 	"time"
 
-	"golang.org/x/crypto/ssh/terminal"
+	"golang.org/x/term"
 
 	cc "github.com/logrusorgru/aurora"
 	corev1 "k8s.io/api/core/v1"
@@ -22,6 +22,8 @@ import (
 var userSelectedIndex int
 var userSelectedNode string
 var nodeName []string
+
+type sizeQueue chan remotecommand.TerminalSize
 
 //Display usage message if user had syntax error.
 const usage = `
@@ -248,19 +250,34 @@ func execToNode(n string) {
 		panic(err)
 	}
 
+	////////////////
 	// Put the terminal into raw mode to prevent it echoing characters twice.
-	oldState, err := terminal.MakeRaw(0)
+	oldState, err := term.MakeRaw(0)
 	if err != nil {
 		panic(err)
 	}
-	defer terminal.Restore(0, oldState)
+
+	termWidth, termHeight, _ := term.GetSize(0)
+	termSize := remotecommand.TerminalSize{Width: uint16(termWidth), Height: uint16(termHeight)}
+	s := make(sizeQueue, 1)
+	s <- termSize
+
+	defer func() {
+		err := term.Restore(0, oldState)
+		if err != nil {
+			panic(err)
+		}
+	}()
+
+	///////////////
 
 	// Connect this process' std{in,out,err} to the remote shell process.
 	err = exec.Stream(remotecommand.StreamOptions{
-		Stdin:  os.Stdin,
-		Stdout: os.Stdout,
-		Stderr: os.Stderr,
-		Tty:    true,
+		Stdin:             os.Stdin,
+		Stdout:            os.Stdout,
+		Stderr:            os.Stderr,
+		Tty:               true,
+		TerminalSizeQueue: s,
 	})
 	if err != nil {
 		panic(err)
@@ -276,4 +293,12 @@ func nodeExist(slice []string, find string) bool {
 		}
 	}
 	return false
+}
+
+func (s sizeQueue) Next() *remotecommand.TerminalSize {
+	size, ok := <-s
+	if !ok {
+		return nil
+	}
+	return &size
 }
