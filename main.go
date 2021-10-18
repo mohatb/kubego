@@ -183,7 +183,7 @@ func execToNode(n string) {
 					SecurityContext: &corev1.SecurityContext{
 						Privileged: &privi,
 					},
-					Command:   []string{"cat"},
+					Command:   []string{"/bin/sh", "-c", "tail", "-f", "/dev/null"},
 					Stdin:     true,
 					StdinOnce: true,
 					TTY:       true,
@@ -238,7 +238,7 @@ func execToNode(n string) {
 		SubResource("exec").
 		VersionedParams(&corev1.PodExecOptions{
 			Container: pod.Spec.Containers[0].Name,
-			Command:   []string{"nsenter", "--target", "1", "--mount", "--uts", "--ipc", "--net", "--pid", "--", "bash", "-l"},
+			Command:   []string{"nsenter", "--target", "1", "--mount", "--uts", "--ipc", "--net", "--pid", "--", "/bin/bash"},
 			Stdin:     true,
 			Stdout:    true,
 			Stderr:    true,
