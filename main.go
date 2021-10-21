@@ -223,8 +223,8 @@ func execToNode(n string) {
 				}
 			}
 
-		default:
-			panic("unexpected event type " + event.Type)
+			// default:
+			// 	panic("unexpected event type " + event.Type)
 		}
 	}
 
