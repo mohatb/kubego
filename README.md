@@ -10,7 +10,7 @@ Linux:
 wget https://github.com/mohatb/kubego/raw/master/bin/kubego-amd64-linux
 chmod +x kubego-amd64-linux
 sudo mv kubego-amd64-linux /usr/local/bin/kubego
-./kubego
+kubego
 ```
 
 
