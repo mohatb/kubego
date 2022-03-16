@@ -1,6 +1,8 @@
 # kubego
 kubego is a rewritten go implementation of kubectl-exec https://github.com/mohatb/kubectl-exec
 
+> :warning: **Windows SSH is still not supported but will be added soon**
+
 ## Installation:
 
 ### Install on Linux:
